@@ -2,6 +2,15 @@
 #include <string.h>
 #include <keywords.h>
 
+/*************************************************
+ * Project My Basic Calculator - Group 6
+
+ * Adriano Yoshimoto
+ * Bruno Domene
+ * Caio Borghi
+ * Gabriel Habberman
+ *************************************************/
+
 char *keyword[] = {
     "quit",
     "exit",

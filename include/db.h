@@ -1,5 +1,14 @@
 /**@<db.h>::**/
+#include <constants.h> 
 #include <stdbool.h>
+/*************************************************
+ * Project My Basic Calculator - Group 6
+
+ * Adriano Yoshimoto
+ * Bruno Domene
+ * Caio Borghi
+ * Gabriel Habberman
+ *************************************************/
 
 /****************************************************************************
  * SYMTAB is an array used to store the name and position of each variable

@@ -1,8 +1,16 @@
 /**@<db.c>::**/
 #include <string.h>
-#include <constants.h> 
 #include <stdlib.h>
 #include <db.h>
+
+/*************************************************
+ * Project My Basic Calculator - Group 6
+
+ * Adriano Yoshimoto
+ * Bruno Domene
+ * Caio Borghi
+ * Gabriel Habberman
+ *************************************************/
 
 /****************************************************************************
  * This file works as a memory-database

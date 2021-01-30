@@ -1,3 +1,11 @@
-/**@<constant.h>::**/
+/**@<constants.h>::**/
+/*************************************************
+ * Project My Basic Calculator - Group 6
+
+ * Adriano Yoshimoto
+ * Bruno Domene
+ * Caio Borghi
+ * Gabriel Habberman
+ *************************************************/
 #define MAXIDLEN 32
 #define MAXSTBENTRIES 0x10000

@@ -1,9 +1,16 @@
 /**@<lexer.c>::**/
 #include <stdio.h>
 #include <ctype.h>
-#include <tokens.h>
-#include <constants.h>
-#include <keywords.h>
+#include <lexer.h>
+
+/*************************************************
+ * Project My Basic Calculator - Group 6
+
+ * Adriano Yoshimoto
+ * Bruno Domene
+ * Caio Borghi
+ * Gabriel Habberman
+ *************************************************/
 
 void skipspaces(FILE *tape)
 {

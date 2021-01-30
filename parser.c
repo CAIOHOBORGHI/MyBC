@@ -21,7 +21,6 @@
  * F -> ( E ) | UINT | OCT | HEX | FLT | dbop
  * dbop -> ID = E | ID
  **************************************************/
-
 void mybc(void)
 {
 	cmd();
@@ -31,6 +30,7 @@ void mybc(void)
 	}
 	match_end();
 }
+
 
 /****************************************
  * cmd -> [ E ] end
@@ -257,6 +257,7 @@ double dbop()
 	return value;
 }
 
+int lookahead;
 void match(int expected)
 {
 	if (lookahead == expected)
