@@ -13,15 +13,15 @@ typedef struct _symtab_
 typedef struct _getresponse_
 {
 	bool found;
-	float value;
+	double value;
 } GET_RESPONSE;
 
 char error[100];
 
-float memory[MAXSTBENTRIES];
+double memory[MAXSTBENTRIES];
 
 SYMTAB symtab[MAXSTBENTRIES];
 int symtab_nextentry;
 
 GET_RESPONSE* get(const char *name);
-void save(const char *name, float value);
+void save(const char *name, double value);

@@ -18,7 +18,7 @@ void mybc(void)
  ****************************************/
 void cmd(void)
 {
-	/**/ float E_val; /**/
+	/**/ double E_val; /**/
 	switch (lookahead)
 	{
 	case '\n':
@@ -29,8 +29,9 @@ void cmd(void)
 		break;
 	default:
 		/**/ E_val = /**/ E();
-		if (strcmp(error, "") == 0)
-			printf("%lg\n", E_val);
+		if (strcmp(error, "") == 0){
+			printf("%.2lf\n", E_val);
+		}
 		else
 		{
 			error[strlen(error)] = '\0';
@@ -66,11 +67,11 @@ int is_end(void)
 /****************************************
  * E -> ['+''-'] T { ['+''-'] T } 
  ****************************************/
-float E(void)
+double E(void)
 {
 	/**/
 	int signal = 0;
-	float E_val = 0, T_val = 0; /**/
+	double E_val = 0, T_val = 0; /**/
 	if (lookahead == '+' || lookahead == '-')
 	{
 		/**/ signal = lookahead; /**/
@@ -104,9 +105,9 @@ float E(void)
 /****************************************
  * T -> F { ['*''/'] F} 
  ****************************************/
-float T(void)
+double T(void)
 {
-	float T_val, F_val;
+	double T_val, F_val;
 	/**/ T_val = /**/ F();
 	_t_head:
 	switch(lookahead){
@@ -131,9 +132,9 @@ float T(void)
 /******************************************
  * F -> ID | UINT | OCT | HEX | FLT | ASSGN 
 *******************************************/
-float F(void)
+double F(void)
 {
-	/**/ float F_val; char name[MAXIDLEN + 1]; /**/
+	/**/ double F_val; char name[MAXIDLEN + 1]; /**/
 	switch (lookahead)
 	{
 	case '(':
@@ -142,12 +143,13 @@ float F(void)
 		match(')');
 		break;
 	case HEX:
-		F_val = (float)strtol(lexeme, NULL, 16);
-		match(lookahead);
+		F_val = (double)strtol(lexeme, NULL, 16);
+		match(HEX);
 		break;
 	case OCT:
-		F_val = (float)strtol(lexeme, NULL, 8);
-		match(lookahead);
+		F_val = (double)strtol(lexeme, NULL, 0);
+		match(OCT);
+		break;
 	case UINT:
 	case FLOAT:
 		/**/ F_val = atof(lexeme); /**/
@@ -168,11 +170,13 @@ float F(void)
 		{
 			//In this case, it needs to retrieve the value from memory
 			GET_RESPONSE *response = get(name);
+
+			//Checks if variable exists in memory, if not, shows error message!
 			if(!response->found)
 			{
 				sprintf(error, "Variable \"%s\" could not be found!", name);
 			}else{
-				/**/ F_val = response->value; /**/
+				/**/ F_val = /**/ response->value;
 			}
 		}
 	}

@@ -42,7 +42,7 @@ GET_RESPONSE* get(const char *name)
 	- The name of the variable 
 	- The value of the variable
  *******************************************************************/
-void save(const char *name, float value)
+void save(const char *name, double value)
 {
 	if (symtab_nextentry == MAXSTBENTRIES)
 	{

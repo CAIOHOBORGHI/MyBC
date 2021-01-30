@@ -179,16 +179,24 @@ int isNUM(FILE *tape)
  */
 int isOCT(FILE *tape)
 {
-	int i = 0;
+	int i = 0, buffer = 0;
 
 	if ((lexeme[i] = getc(tape)) == '0')
 	{
 		i++;
-		if (isdigit(lexeme[i] = getc(tape)) && lexeme[i] <= 7)
+		if(isdigit(lexeme[i] = getc(tape)))
+		{
+			//Converting char to digit
+			buffer = lexeme[i] - '0';
+		}
+
+		if (buffer <= 7)
 		{
 			i++;
-			while (isdigit(lexeme[i] = getc(tape)) && lexeme[i] <= 7)
-				i++;
+			while (isdigit(lexeme[i] = getc(tape))){
+				buffer = lexeme[i] - '0';
+				if(buffer <= 7) i++;
+			}
 
 			ungetc(lexeme[i], tape);
 			lexeme[i] = '\0';
@@ -204,7 +212,6 @@ int isOCT(FILE *tape)
 			return 0;
 		}
 	}
-
 	ungetc(lexeme[i], tape);
 	lexeme[i] = '\0';
 	return 0;
@@ -240,8 +247,10 @@ int isHEX(FILE *tape)
 				return 0;
 			}
 		}
-		while(i > 0)
+		while(i >= 0){
 			ungetc(lexeme[i], tape);
+			i--;
+		}
 				
 		lexeme[0] = '\0';
 		return 0;
@@ -266,7 +275,6 @@ int gettoken(FILE *source)
 
 	if ((token = isOCT(source)))
 		return token;
-
 
 	if ((token = isNUM(source)))
 		return token;

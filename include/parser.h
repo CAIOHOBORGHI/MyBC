@@ -7,9 +7,9 @@
 
 extern char lexeme[];
 
-float E(void);
-float T(void);
-float F(void);
+double E(void);
+double T(void);
+double F(void);
 
 void cmd(void);
 int is_end(void);
