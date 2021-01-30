@@ -1,14 +1,7 @@
 /**@<parser.c>::**/
 #include <keywords.h>
 #include <parser.h>
-
-/* mybc -> cmd  { sepcm cmd } end 
-* cmd -> E | <> 
-* end -> QUIT | EXIT | EOF 
-* sepocm = '\n' | ';' 
-*/
-
-char error[100];
+#include <db.h>
 
 void mybc(void)
 {
@@ -21,11 +14,11 @@ void mybc(void)
 }
 
 /****************************************
- * cmd -> E | <>
+ * cmd -> [ E ]
  ****************************************/
 void cmd(void)
 {
-	/**/ double E_val; /**/
+	/**/ float E_val; /**/
 	switch (lookahead)
 	{
 	case '\n':
@@ -71,68 +64,76 @@ int is_end(void)
 }
 
 /****************************************
- * E -> ['+''-'] T { (+) T } 
+ * E -> ['+''-'] T { ['+''-'] T } 
  ****************************************/
-double E(void)
+float E(void)
 {
 	/**/
 	int signal = 0;
-	double E_val = 0, T_val = 0; /**/
+	float E_val = 0, T_val = 0; /**/
 	if (lookahead == '+' || lookahead == '-')
 	{
 		/**/ signal = lookahead; /**/
 		match(lookahead);
 	}
 
-	T_val = T();
-	/**/ if (signal == '-')
-	{
-		T_val = -T_val;
-	} /**/
+	E_val = T();
+	if (signal == '-')
+		E_val = -E_val;
 
-	/**/ E_val = /**/ T_val;
-	while (lookahead == '+' || lookahead == '-')
-	{
-		/*(1a)*/ int oplus = lookahead; /**/
-		match(lookahead);
-		T_val = T();
-		/*(1)*/
-		if (oplus == '+')
+	_e_head:
+	switch(lookahead){
+		case '+':
+			match('+');
+			T_val = T();
 			E_val += T_val;
-		else
+			goto _e_head;
+			break;
+
+		case '-':
+			match('-');
+			T_val = T();
 			E_val -= T_val;
-		/**/
+			goto _e_head;
+			break;
+		default:
+			return E_val;
 	}
-	return E_val;
 }
 
-/* T -> F { (2a) (*) F (2) } */
-double T(void)
+/****************************************
+ * T -> F { ['*''/'] F} 
+ ****************************************/
+float T(void)
 {
-	double T_val, F_val;
+	float T_val, F_val;
 	/**/ T_val = /**/ F();
-	while (lookahead == '*' || lookahead == '/')
-	{
-		/*(2a)*/ int otimes = lookahead; /**/
-		match(lookahead);
-		/**/ F_val = /**/ F();
-		/*(2)*/
-		if (otimes == '*')
+	_t_head:
+	switch(lookahead){
+		case '*':
+			match('*');
+			/**/ F_val = /**/ F();
 			T_val *= F_val;
-		else
+			goto _t_head;
+			break;
+		case '/':
+			match('/');
+			/**/ F_val = /**/ F();
 			T_val /= F_val;
-		/**/
+			goto _t_head;
+			break;
+		default:
+			return T_val;
 	}
 	return T_val;
 }
 
-/*  F ->  ( E )
- *      | (3) n
- *      | (4) v  [ = E ] */
-double F(void)
+/******************************************
+ * F -> ID | UINT | OCT | HEX | FLT | ASSGN 
+*******************************************/
+float F(void)
 {
-	/**/ double F_val;
-	char name[MAXIDLEN + 1]; /**/
+	/**/ float F_val; char name[MAXIDLEN + 1]; /**/
 	switch (lookahead)
 	{
 	case '(':
@@ -140,10 +141,15 @@ double F(void)
 		/**/ F_val = /**/ E();
 		match(')');
 		break;
+	case HEX:
+		F_val = (float)strtol(lexeme, NULL, 16);
+		match(lookahead);
+		break;
+	case OCT:
+		F_val = (float)strtol(lexeme, NULL, 8);
+		match(lookahead);
 	case UINT:
 	case FLOAT:
-		// case HEX:
-		// case OCT:
 		/**/ F_val = atof(lexeme); /**/
 		match(lookahead);
 		break;
@@ -177,60 +183,5 @@ void match(int expected)
 	{
 		error[0] = '\0';
 		sprintf(error, "token mismatch: expected %d whereas found %d", expected, lookahead);
-		// exit(-2);
 	}
-}
-
-//Symbol Table Entries
-double memory[MAXSTBENTRIES];
-typedef struct _symtab_
-{
-	char name[MAXIDLEN + 1];
-	int pos;
-} SYMTAB;
-
-SYMTAB symtab[MAXSTBENTRIES];
-int symtab_nextentry = 0;
-
-/*******************************************************************
- * Function GET 
- * What it does: Search for a variable in memory
- * What it receives: The name of the variable as parameter
- * What it returns: The value of the variable stored in memory or 0
- * Note: in case variable doesn't exists it returns 0 
- *******************************************************************/
-double get(const char *name)
-{
-	int i;
-	for (i = 0; i < symtab_nextentry; i++)
-	{
-		SYMTAB current = symtab[i];
-		if (strcmp(current.name, name) == 0)
-		{
-			return memory[i];
-		}
-	}
-	return 0;
-}
-
-void save(const char *name, double value)
-{
-	if (symtab_nextentry == MAXSTBENTRIES)
-	{
-		strcmp(error, "Can't add new variables, memory is full!");
-		return;
-	}
-	int i;
-	for (i = 0; i < symtab_nextentry; i++)
-	{
-		SYMTAB current = symtab[i];
-		if (strcmp(current.name, name) == 0)
-			break;
-	}
-	if (i == symtab_nextentry)
-	{
-		strcpy(symtab[i].name, name);
-		symtab_nextentry++;
-	}
-	memory[i] = value;
 }

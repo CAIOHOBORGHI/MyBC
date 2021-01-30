@@ -1,14 +1,4 @@
 /**@<lexer.c>::**/
-// Tue Nov 17 07:55:34 PM -03 2020
-/*
- * this is the start project for lexical analyser to be used
- * as the interface to the parser of the project mybc (my basic
- * calculator).
- *
- * In order to have a pattern scan we have first to implement
- * a method to ignore spaces.
- */
-
 #include <stdio.h>
 #include <ctype.h>
 #include <tokens.h>
@@ -27,6 +17,7 @@ void skipspaces(FILE *tape)
 
 	ungetc(head, tape);
 }
+
 /* Now we need a predicate function to recognize a string
  * begining with a letter (alpha) followed by zero or more
  * digits and letters.
@@ -51,7 +42,7 @@ int isID(FILE *tape)
 			i++;
 		}
 		ungetc(lexeme[i], tape);
-		lexeme[i] = 0;
+		lexeme[i] = '\0';
 
 		//Checks if entry is a keyword
 		int token = iskeyword(lexeme);
@@ -60,9 +51,7 @@ int isID(FILE *tape)
 
 		return ID;
 	}
-
 	ungetc(lexeme[i], tape);
-
 	return 0;
 }
 
@@ -80,7 +69,7 @@ int isUINT(FILE *tape)
 		if (lexeme[i] == '0')
 		{
 			i++;
-			lexeme[i] = 0;
+			lexeme[i] = '\0';
 			;
 		}
 		else
@@ -91,7 +80,7 @@ int isUINT(FILE *tape)
 				i++;
 			}
 			ungetc(lexeme[i], tape);
-			lexeme[i] = 0;
+			lexeme[i] = '\0';
 		}
 		return UINT;
 	}
@@ -190,34 +179,34 @@ int isNUM(FILE *tape)
  */
 int isOCT(FILE *tape)
 {
-	int head;
+	int i = 0;
 
-	if ((head = getc(tape)) == '0')
+	if ((lexeme[i] = getc(tape)) == '0')
 	{
-
-		if (isdigit(head = getc(tape)) && head <= 7)
+		i++;
+		if (isdigit(lexeme[i] = getc(tape)) && lexeme[i] <= 7)
 		{
+			i++;
+			while (isdigit(lexeme[i] = getc(tape)) && lexeme[i] <= 7)
+				i++;
 
-			while (isdigit(head = getc(tape)) && head <= 7)
-				;
-
-			ungetc(head, tape);
-
+			ungetc(lexeme[i], tape);
+			lexeme[i] = '\0';
 			return OCT;
 		}
 		else
 		{
-
-			ungetc(head, tape);
-
-			ungetc('0', tape);
-
+			while(i > 0)
+			{
+				ungetc(lexeme[i], tape);
+				i--;
+			}
 			return 0;
 		}
 	}
 
-	ungetc(head, tape);
-
+	ungetc(lexeme[i], tape);
+	lexeme[i] = '\0';
 	return 0;
 }
 /* Hexadecimalpattern is defined as
@@ -225,47 +214,41 @@ int isOCT(FILE *tape)
  */
 int isHEX(FILE *tape)
 {
-	int head;
-	int x;
-
-	if ((head = getc(tape)) == '0')
+	int i = 0;
+	if ((lexeme[i] = getc(tape)) == '0')
 	{
-
-		if ((x = getc(tape)) == 'X' || x == 'x')
+		i++;
+		if ((lexeme[i] = getc(tape)) == 'X' || lexeme[i] == 'x')
 		{
-
-			if (isxdigit(head = getc(tape)))
+			i++;
+			if (isxdigit(lexeme[i] = getc(tape)))
 			{
+				i++;
+				while (isxdigit(lexeme[i] = getc(tape)))
+					i++;
 
-				while (isxdigit(head = getc(tape)))
-					;
-
-				ungetc(head, tape);
-
+				ungetc(lexeme[i], tape);
+				lexeme[i] = '\0';
 				return HEX;
 			}
 			else
 			{
-
-				ungetc(head, tape);
-
-				ungetc(x, tape);
-
-				ungetc('0', tape);
-
+				while(i > 0)
+					ungetc(lexeme[i], tape);
+				
+				lexeme[0] = '\0';
 				return 0;
 			}
 		}
-
-		ungetc(x, tape);
-
-		ungetc('0', tape);
-
+		while(i > 0)
+			ungetc(lexeme[i], tape);
+				
+		lexeme[0] = '\0';
 		return 0;
 	}
 
-	ungetc(head, tape);
-
+	ungetc(lexeme[0], tape);
+	lexeme[0] = '\0';
 	return 0;
 }
 
@@ -278,11 +261,12 @@ int gettoken(FILE *source)
 	if ((token = isID(source)))
 		return token;
 
+	if ((token = isHEX(source)))
+		return token;
+
 	if ((token = isOCT(source)))
 		return token;
 
-	if ((token = isHEX(source)))
-		return token;
 
 	if ((token = isNUM(source)))
 		return token;

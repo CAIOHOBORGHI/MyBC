@@ -1,3 +1,4 @@
+/**@<keywords.h>::**/
 int iskeyword(const char *name);
 
 enum

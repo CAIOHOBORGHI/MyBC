@@ -1,6 +1,6 @@
 CFLAGS=-g -I./include
 
-mybc: mybc.o lexer.o parser.o keywords.o
+mybc: mybc.o lexer.o parser.o keywords.o db.o
 	$(CC) -o $@ $^
 
 clean:

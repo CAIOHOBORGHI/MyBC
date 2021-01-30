@@ -7,9 +7,9 @@
 
 extern char lexeme[];
 
-double E(void);
-double T(void);
-double F(void);
+float E(void);
+float T(void);
+float F(void);
 
 void cmd(void);
 int is_end(void);
@@ -17,8 +17,8 @@ int is_end(void);
 void match(int expected);
 int gettoken(FILE *);
 
-double get(const char *name);
-void save(const char *name, double value);
+float get(const char *name);
+void save(const char *name, float value);
 void setError(char *message);
 
 extern int lookahead;

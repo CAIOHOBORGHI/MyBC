@@ -1,3 +1,4 @@
+/**@<keywords.c>::**/
 #include <string.h>
 #include <keywords.h>
 
