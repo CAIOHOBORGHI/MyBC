@@ -130,11 +130,11 @@ double T(void)
 }
 
 /******************************************
- * F -> ID | UINT | OCT | HEX | FLT | ASSGN 
+ * F -> ( E ) | UINT | OCT | HEX | FLT | DBOP 
 *******************************************/
 double F(void)
 {
-	/**/ double F_val; char name[MAXIDLEN + 1]; /**/
+	/**/ double F_val;/**/
 	switch (lookahead)
 	{
 	case '(':
@@ -156,31 +156,51 @@ double F(void)
 		match(lookahead);
 		break;
 	default:
-		/**/ strcpy(name, lexeme); /**/
-		match(ID);
-
-		//If next character is ASSIGN, then it needs to save value in memory
-		if (lookahead == '=')
-		{
-			match('=');
-			/**/ F_val = /**/ E();
-			/**/ save(name, F_val); /**/
-		}
-		else
-		{
-			//In this case, it needs to retrieve the value from memory
-			GET_RESPONSE *response = get(name);
-
-			//Checks if variable exists in memory, if not, shows error message!
-			if(!response->found)
-			{
-				sprintf(error, "Variable \"%s\" could not be found!", name);
-			}else{
-				/**/ F_val = /**/ response->value;
-			}
-		}
+		F_val = dbop();
 	}
 	/**/ return F_val /**/;
+}
+
+/**********************************************************************
+ * DBOP -> ID = E | ID
+ *
+ * Function: DataBaseOperation
+ *
+ * What it does: Saves a value in memory or retrieves value from memory
+ *
+ * Returns:
+ * 0 - In case variable not found
+ * E - In case of assignment
+ * ID value - In case of retrievement 
+ ***********************************************************************/
+double dbop()
+{
+	 char name[MAXIDLEN + 1];
+	 double value = 0; 
+	/**/ strcpy(name, lexeme); /**/
+	match(ID);
+
+	//If next character is '=', then it needs to save value in memory
+	if (lookahead == '=')
+	{
+		match('=');
+		/**/ value = /**/ E();
+		/**/ save(name, value); /**/
+	}
+	else
+	{
+		//In this case, it needs to retrieve the value from memory
+		GET_RESPONSE *response = get(name);
+
+		//Checks if variable exists in memory, if not, shows error message!
+		if(!response->found)
+		{
+			sprintf(error, "Variable \"%s\" could not be found!", name);
+		}else{
+			/**/ value = /**/ response->value;
+		}
+	}
+	return value;
 }
 
 void match(int expected)

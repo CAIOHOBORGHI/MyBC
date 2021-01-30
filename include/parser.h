@@ -13,6 +13,7 @@ double F(void);
 
 void cmd(void);
 int is_end(void);
+double dbop(void);
 
 void match(int expected);
 int gettoken(FILE *);
