@@ -13,6 +13,8 @@ double F(void);
 
 void cmd(void);
 int is_end(void);
+void match_end(void);
+int match_if_sep(void);
 double dbop(void);
 
 void match(int expected);

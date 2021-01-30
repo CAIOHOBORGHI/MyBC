@@ -3,64 +3,114 @@
 #include <parser.h>
 #include <db.h>
 
+/*************************************************
+ * Project My Basic Calculator - Group 6
+
+ * Adriano Yoshimoto
+ * Bruno Domene
+ * Caio Borghi
+ * Gabriel Habberman
+
+ * Grammar definition:
+
+ * mybc -> cmd {sep cmd }
+ * sep -> ['\n'';']
+ * cmd -> [ E ] end
+ * E -> ['+''-'] T { ['+''-'] T } 
+ * T -> F { ['*''/'] F }
+ * F -> ( E ) | UINT | OCT | HEX | FLT | dbop
+ * dbop -> ID = E | ID
+ **************************************************/
+
 void mybc(void)
 {
 	cmd();
-	while (!is_end())
+	while(match_if_sep())
 	{
-		match(lookahead);
 		cmd();
 	}
+	match_end();
 }
 
 /****************************************
- * cmd -> [ E ]
+ * cmd -> [ E ] end
  ****************************************/
 void cmd(void)
 {
 	/**/ double E_val; /**/
-	switch (lookahead)
+	if(is_end())
+		return;
+	/**/ E_val = /**/ E();
+	// With the following code, the application doesn't exit in case of error
+	if (strcmp(error, "") == 0){
+		printf("%.2lf\n", E_val);
+	}
+	else
 	{
-	case '\n':
-	case ';':
-	case QUIT:
-	case EXIT:
-	case EOF:
-		break;
-	default:
-		/**/ E_val = /**/ E();
-		if (strcmp(error, "") == 0){
-			printf("%.2lf\n", E_val);
-		}
-		else
-		{
-			error[strlen(error)] = '\0';
-			printf("Error! %s\n", error);
-			strcpy(error, "");
-		}
+		error[strlen(error)] = '\0';
+		printf("Error! %s\n", error);
+		strcpy(error, "");
+	}
+}
+
+/****************************************
+ * sep -> ';' | '\n'
+ *
+ * This method indicates if lookahead is separator
+ * 
+ * Return 1 in case of lookahead is sep, and matches it
+ * Returns 0 in case of lookaheas isn't sep
+ ****************************************/
+int match_if_sep(void)
+{
+	switch(lookahead)
+	{
+		case '\n':
+			match('\n');
+			return 1;
+		case ';':
+			match(';');
+			return 1;
+		default:
+			return 0;
 	}
 }
 
 /****************************************
  * end -> QUIT | EXIT | EOF
  * 
- * Function that indicates if program ended
+ * This methos indicates if program 
  ****************************************/
 int is_end(void)
 {
 	switch (lookahead)
 	{
 	case EOF:
-		match(lookahead);
 		return 1;
 	case EXIT:
-		match(EXIT);
 		return 1;
 	case QUIT:
-		match(QUIT);
 		return 1;
 	default:
 		return 0;
+	}
+}
+
+/***************************************
+ * Function that matches end of program
+ ***************************************/
+void match_end(void)
+{
+	switch(lookahead)
+	{
+		case EXIT:
+			match(EXIT);
+			break;
+		case QUIT:
+			match(QUIT);
+			break;
+		default:
+			match(EOF);
 	}
 }
 
@@ -78,7 +128,7 @@ double E(void)
 		match(lookahead);
 	}
 
-	E_val = T();
+	/**/E_val = /**/ T();
 	if (signal == '-')
 		E_val = -E_val;
 
@@ -86,14 +136,14 @@ double E(void)
 	switch(lookahead){
 		case '+':
 			match('+');
-			T_val = T();
+			/**/ T_val = /**/T();
 			E_val += T_val;
 			goto _e_head;
 			break;
 
 		case '-':
 			match('-');
-			T_val = T();
+			/**/ T_val = /**/T();
 			E_val -= T_val;
 			goto _e_head;
 			break;
@@ -129,9 +179,11 @@ double T(void)
 	return T_val;
 }
 
-/******************************************
- * F -> ( E ) | UINT | OCT | HEX | FLT | DBOP 
-*******************************************/
+/**************************************************
+ * F -> ( E ) | UINT | OCT | HEX | FLT | dbop 
+ *
+ * Note: OCT, UINT and Hex will be parsed to FLOAT
+***************************************************/
 double F(void)
 {
 	/**/ double F_val;/**/
@@ -142,6 +194,8 @@ double F(void)
 		/**/ F_val = /**/ E();
 		match(')');
 		break;
+	//As a requirement, the application only works with float
+	//So, to be able to make the parse, we need to know if its OCT or HEX
 	case HEX:
 		F_val = (double)strtol(lexeme, NULL, 16);
 		match(HEX);
@@ -162,7 +216,7 @@ double F(void)
 }
 
 /**********************************************************************
- * DBOP -> ID = E | ID
+ * dbop -> ID = E | ID
  *
  * Function: DataBaseOperation
  *
