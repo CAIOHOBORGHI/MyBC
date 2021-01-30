@@ -167,7 +167,13 @@ float F(void)
 		else
 		{
 			//In this case, it needs to retrieve the value from memory
-			/**/ F_val = get(name); /**/
+			GET_RESPONSE *response = get(name);
+			if(!response->found)
+			{
+				sprintf(error, "Variable \"%s\" could not be found!", name);
+			}else{
+				/**/ F_val = response->value; /**/
+			}
 		}
 	}
 	/**/ return F_val /**/;

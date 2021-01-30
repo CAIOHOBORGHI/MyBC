@@ -1,6 +1,7 @@
 /**@<db.c>::**/
 #include <string.h>
 #include <constants.h> 
+#include <stdlib.h>
 #include <db.h>
 
 /****************************************************************************
@@ -16,18 +17,22 @@
  * What it returns: The value of the variable stored in memory or 0
  * Note: in case variable doesn't exists it returns 0 
  *******************************************************************/
-float get(const char *name)
+GET_RESPONSE* get(const char *name)
 {
+	GET_RESPONSE *response = malloc(sizeof(GET_RESPONSE));
 	int i;
 	for (i = 0; i < symtab_nextentry; i++)
 	{
 		SYMTAB current = symtab[i];
 		if (strcmp(current.name, name) == 0)
 		{
-			return memory[i];
+			response->found = true;
+			response->value = memory[i];
+			return response;
 		}
 	}
-	return 0;
+	response->found = false;
+	return response;
 }
 
 /*******************************************************************
