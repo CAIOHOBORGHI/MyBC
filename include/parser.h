@@ -1,4 +1,5 @@
 /**@<parser.h>::**/
+#pragma once
 /*************************************************
  * Project My Basic Calculator - Group 6
 
@@ -13,7 +14,7 @@
 #include <constants.h>
 #include <tokens.h>
 
-int lookahead;
+extern int lookahead;
 extern FILE *source;
 extern char lexeme[];
 

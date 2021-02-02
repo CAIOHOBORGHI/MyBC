@@ -1,4 +1,5 @@
 /**@<db.h>::**/
+#pragma once
 #include <constants.h> 
 #include <stdbool.h>
 /*************************************************

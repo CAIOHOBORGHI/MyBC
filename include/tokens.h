@@ -1,4 +1,5 @@
 /**@<tokens.h>::**/
+#pragma once
 /*************************************************
  * Project My Basic Calculator - Group 6
 

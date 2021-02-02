@@ -1,4 +1,5 @@
 /**@<lexer.h>::**/
+#pragma once
 /*************************************************
  * Project My Basic Calculator - Group 6
 
@@ -11,5 +12,5 @@
 #include <constants.h>
 #include <keywords.h>
 
-char lexeme[MAXIDLEN + 1];
+extern char lexeme[MAXIDLEN + 1];
 int gettoken(FILE *source);
