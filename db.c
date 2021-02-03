@@ -18,14 +18,20 @@
  * It stores and retrieves the values and positions of every runtime variable
  ******************************************************************************/
 
+char error[100];
+double memory[MAXSTBENTRIES];
+SYMTAB symtab[MAXSTBENTRIES];
+int symtab_nextentry;
+
 /*******************************************************************
  * GET 
  * What it does: Search for a variable in memory
  * What it receives: The name of the variable as parameter
  * What it returns: The value of the variable stored in memory or 0
  * Note: in case variable doesn't exists it returns 0 
+ * GET_RESPONSE -> Struct declaration in db.h
  *******************************************************************/
-GET_RESPONSE* get(const char *name)
+GET_RESPONSE *get(const char *name)
 {
 	GET_RESPONSE *response = malloc(sizeof(GET_RESPONSE));
 	int i;

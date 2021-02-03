@@ -1,6 +1,6 @@
 /**@<db.h>::**/
 #pragma once
-#include <constants.h> 
+#include <constants.h>
 #include <stdbool.h>
 /*************************************************
  * Project My Basic Calculator - Group 6
@@ -20,18 +20,24 @@ typedef struct _symtab_
 	int pos;
 } SYMTAB;
 
+/*****************************************************************************
+ * STRUCT GET_RESPONSE
+ * 
+ * Is used because without the flag 'found' we would not be able to know if 
+ * user entered an unregistered variable(because the value would it be 0)
+ ******************************************************************************/
 typedef struct _getresponse_
 {
 	bool found;
 	double value;
 } GET_RESPONSE;
 
-char error[100];
+// Variables declared in db.c
+extern char error[100];
+extern double memory[MAXSTBENTRIES];
+extern SYMTAB symtab[MAXSTBENTRIES];
+extern int symtab_nextentry;
 
-double memory[MAXSTBENTRIES];
-
-SYMTAB symtab[MAXSTBENTRIES];
-int symtab_nextentry;
-
-GET_RESPONSE* get(const char *name);
+// Memory-Database Methods
+GET_RESPONSE *get(const char *name);
 void save(const char *name, double value);

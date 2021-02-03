@@ -21,16 +21,16 @@
  * F -> ( E ) | UINT | OCT | HEX | FLT | dbop
  * dbop -> ID = E | ID
  **************************************************/
+
 void mybc(void)
 {
 	cmd();
-	while(match_if_sep())
+	while (match_if_sep())
 	{
 		cmd();
 	}
 	match_end();
 }
-
 
 /****************************************
  * cmd -> [ E ] end
@@ -38,15 +38,17 @@ void mybc(void)
 void cmd(void)
 {
 	/**/ double E_val; /**/
-	if(is_end())
+	if (is_end())
 		return;
 	/**/ E_val = /**/ E();
 	// With the following code, the application doesn't exit in case of error
-	if (strcmp(error, "") == 0){
+	if (strcmp(error, "") == 0)
+	{
 		printf("%.2lf\n", E_val);
 	}
 	else
 	{
+		//Adding \0 to string to prevent that trash-memory symbols get printed
 		error[strlen(error)] = '\0';
 		printf("Error! %s\n", error);
 		strcpy(error, "");
@@ -63,16 +65,16 @@ void cmd(void)
  ****************************************/
 int match_if_sep(void)
 {
-	switch(lookahead)
+	switch (lookahead)
 	{
-		case '\n':
-			match('\n');
-			return 1;
-		case ';':
-			match(';');
-			return 1;
-		default:
-			return 0;
+	case '\n':
+		match('\n');
+		return 1;
+	case ';':
+		match(';');
+		return 1;
+	default:
+		return 0;
 	}
 }
 
@@ -101,16 +103,16 @@ int is_end(void)
  ***************************************/
 void match_end(void)
 {
-	switch(lookahead)
+	switch (lookahead)
 	{
-		case EXIT:
-			match(EXIT);
-			break;
-		case QUIT:
-			match(QUIT);
-			break;
-		default:
-			match(EOF);
+	case EXIT:
+		match(EXIT);
+		break;
+	case QUIT:
+		match(QUIT);
+		break;
+	default:
+		match(EOF);
 	}
 }
 
@@ -128,27 +130,28 @@ double E(void)
 		match(lookahead);
 	}
 
-	/**/E_val = /**/ T();
+	/**/ E_val = /**/ T();
 	if (signal == '-')
 		E_val = -E_val;
 
-	_e_head:
-	switch(lookahead){
-		case '+':
-			match('+');
-			/**/ T_val = /**/T();
-			E_val += T_val;
-			goto _e_head;
-			break;
+_e_head:
+	switch (lookahead)
+	{
+	case '+':
+		match('+');
+		/**/ T_val = /**/ T();
+		E_val += T_val;
+		goto _e_head;
+		break;
 
-		case '-':
-			match('-');
-			/**/ T_val = /**/T();
-			E_val -= T_val;
-			goto _e_head;
-			break;
-		default:
-			return E_val;
+	case '-':
+		match('-');
+		/**/ T_val = /**/ T();
+		E_val -= T_val;
+		goto _e_head;
+		break;
+	default:
+		return E_val;
 	}
 }
 
@@ -159,22 +162,23 @@ double T(void)
 {
 	double T_val, F_val;
 	/**/ T_val = /**/ F();
-	_t_head:
-	switch(lookahead){
-		case '*':
-			match('*');
-			/**/ F_val = /**/ F();
-			T_val *= F_val;
-			goto _t_head;
-			break;
-		case '/':
-			match('/');
-			/**/ F_val = /**/ F();
-			T_val /= F_val;
-			goto _t_head;
-			break;
-		default:
-			return T_val;
+_t_head:
+	switch (lookahead)
+	{
+	case '*':
+		match('*');
+		/**/ F_val = /**/ F();
+		T_val *= F_val;
+		goto _t_head;
+		break;
+	case '/':
+		match('/');
+		/**/ F_val = /**/ F();
+		T_val /= F_val;
+		goto _t_head;
+		break;
+	default:
+		return T_val;
 	}
 	return T_val;
 }
@@ -186,7 +190,7 @@ double T(void)
 ***************************************************/
 double F(void)
 {
-	/**/ double F_val;/**/
+	/**/ double F_val; /**/
 	switch (lookahead)
 	{
 	case '(':
@@ -229,8 +233,8 @@ double F(void)
  ***********************************************************************/
 double dbop()
 {
-	 char name[MAXIDLEN + 1];
-	 double value = 0; 
+	char name[MAXIDLEN + 1];
+	double value = 0;
 	/**/ strcpy(name, lexeme); /**/
 	match(ID);
 
@@ -247,10 +251,12 @@ double dbop()
 		GET_RESPONSE *response = get(name);
 
 		//Checks if variable exists in memory, if not, shows error message!
-		if(!response->found)
+		if (!response->found)
 		{
 			sprintf(error, "Variable \"%s\" could not be found!", name);
-		}else{
+		}
+		else
+		{
 			/**/ value = /**/ response->value;
 		}
 	}

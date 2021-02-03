@@ -17,6 +17,7 @@
 extern int lookahead;
 extern FILE *source;
 extern char lexeme[];
+extern char error[]; //Declared at db.c
 
 double E(void);
 double T(void);
